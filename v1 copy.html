@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StreamVibe — Discover & Rate</title>
+  <meta name="description" content="Your next favorite movie or series awaits" />
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap');
+    
+    /* RESET + BASE */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family: 'Outfit', system-ui, sans-serif;}
+    :root{
+      --bg:#0a0e27;
+      --bg-secondary:#141b34;
+      --nav:#1a1f3a;
+      --accent:#6366f1;
+      --accent-light:#818cf8;
+      --accent-dark:#4f46e5;
+      --pink:#ec4899;
+      --cyan:#06b6d4;
+      --card:#1e293b;
+      --card-hover:#2d3b54;
+      --text:#f1f5f9;
+      --muted:#94a3b8;
+      --border:#334155;
+      --radius:16px;
+      --shadow: 0 20px 50px rgba(0,0,0,0.4);
+      --glow: 0 0 20px rgba(99,102,241,0.3);
+    }
+
+    body{
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1729 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    /* Animated background */
+    body::before{
+      content:'';
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background: radial-gradient(circle at 20% 50%, rgba(99,102,241,0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(236,72,153,0.1) 0%, transparent 50%);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .content-wrap{
+      position:relative;
+      z-index:1;
+      padding:20px;
+      max-width:1600px;
+      margin:0 auto;
+    }
+
+    /* NAV */
+    header{
+      background:rgba(26,31,58,0.8);
+      backdrop-filter:blur(20px);
+      border:1px solid var(--border);
+      color:white;
+      padding:16px 24px;
+      border-radius:20px;
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      box-shadow:var(--shadow);
+      margin-bottom:24px;
+    }
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{
+      background:linear-gradient(135deg, var(--accent) 0%, var(--pink) 100%);
+      color:white;
+      font-weight:900;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:20px;
+      box-shadow:var(--glow);
+    }
+    .site-title{font-weight:900;font-size:22px;background:linear-gradient(135deg, #fff 0%, var(--accent-light) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .tagline{font-size:12px;color:var(--muted);font-weight:500}
+
+    /* TOGGLE SWITCH - Enhanced */
+    .toggle-container{
+      display:flex;
+      gap:8px;
+      background:var(--bg-secondary);
+      border-radius:14px;
+      padding:6px;
+      border:1px solid var(--border);
+    }
+    .toggle-btn{
+      padding:10px 24px;
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      cursor:pointer;
+      border-radius:10px;
+      font-weight:700;
+      transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size:15px;
+      position:relative;
+    }
+    .toggle-btn.active{
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color:white;
+      box-shadow:0 4px 15px rgba(99,102,241,0.4);
+    }
+
+    .nav-right{display:flex;align-items:center;gap:14px}
+    .search{
+      background:var(--bg-secondary);
+      padding:10px 16px;
+      border-radius:12px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      border:1px solid var(--border);
+      transition:all 0.3s;
+    }
+    .search:focus-within{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(99,102,241,0.1);
+    }
+    .search input{
+      background:transparent;
+      border:0;
+      color:white;
+      outline:none;
+      width:200px;
+      font-size:14px;
+    }
+    .search input::placeholder{color:var(--muted)}
+    
+    .auth-btns{display:flex;gap:10px}
+    .btn-auth{
+      padding:10px 20px;
+      border-radius:12px;
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      font-size:14px;
+      transition:all 0.3s;
+    }
+    .btn-login{
+      background:transparent;
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+    .btn-login:hover{
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+    .btn-signup{
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color:white;
+      box-shadow:0 4px 15px rgba(99,102,241,0.3);
+    }
+    .btn-signup:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(99,102,241,0.4);
+    }
+
+    /* LAYOUT */
+    .container{display:grid;grid-template-columns:320px 1fr;gap:24px;margin-top:24px}
+
+    /* SIDEBAR - Enhanced Info Panel */
+    aside{
+      background:rgba(30,41,59,0.6);
+      backdrop-filter:blur(20px);
+      padding:24px;
+      border-radius:var(--radius);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      height:max-content;
+      position:sticky;
+      top:20px;
+    }
+    .info-header{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:20px;
+      padding-bottom:16px;
+      border-bottom:2px solid var(--border);
+    }
+    .info-icon{
+      width:48px;
+      height:48px;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--pink) 100%);
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:24px;
+    }
+    .info-title{font-size:20px;font-weight:900;line-height:1.2}
+    .info-content{
+      color:var(--muted);
+      line-height:1.7;
+      font-size:15px;
+      margin-bottom:20px;
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:20px;
+    }
+    .stat-card{
+      background:var(--bg-secondary);
+      padding:16px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      text-align:center;
+    }
+    .stat-value{
+      font-size:24px;
+      font-weight:900;
+      background:linear-gradient(135deg, var(--accent-light) 0%, var(--cyan) 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .stat-label{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:4px;
+      font-weight:600;
+    }
+    .trending-tag{
+      display:inline-block;
+      background:linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(236,72,153,0.2) 100%);
+      color:var(--accent-light);
+      padding:8px 16px;
+      border-radius:8px;
+      font-size:13px;
+      font-weight:700;
+      margin-top:16px;
+      border:1px solid rgba(99,102,241,0.3);
+    }
+
+    /* MAIN */
+    main{display:flex;flex-direction:column;gap:20px}
+    .hero{
+      background:linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(236,72,153,0.1) 100%);
+      backdrop-filter:blur(20px);
+      border:1px solid var(--border);
+      padding:24px;
+      border-radius:var(--radius);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      box-shadow:var(--shadow);
+    }
+    .hero-left h1{
+      font-size:28px;
+      font-weight:900;
+      margin-bottom:8px;
+      background:linear-gradient(135deg, #fff 0%, var(--accent-light) 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .hero-left p{color:var(--muted);font-size:14px;font-weight:500}
+
+    .movie-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+      gap:20px;
+    }
+
+    /* CARD - Enhanced */
+    .card{
+      background:var(--card);
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      display:flex;
+      flex-direction:column;
+      transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border:1px solid var(--border);
+      position:relative;
+    }
+    .card::before{
+      content:'';
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(236,72,153,0.1) 100%);
+      opacity:0;
+      transition:opacity 0.4s;
+      pointer-events:none;
+    }
+    .card:hover{
+      transform:translateY(-8px);
+      box-shadow:0 25px 60px rgba(0,0,0,0.5), 0 0 30px rgba(99,102,241,0.3);
+      border-color:var(--accent);
+    }
+    .card:hover::before{opacity:1}
+    
+    .thumb{
+      height:380px;
+      background-size:cover;
+      background-position:center;
+      position:relative;
+    }
+    .thumb::after{
+      content:'';
+      position:absolute;
+      bottom:0;
+      left:0;
+      width:100%;
+      height:50%;
+      background:linear-gradient(to top, rgba(10,14,39,0.9) 0%, transparent 100%);
+    }
+    .rating-badge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      background:rgba(10,14,39,0.9);
+      backdrop-filter:blur(10px);
+      padding:8px 14px;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--border);
+    }
+    .rating-badge svg{width:16px;height:16px;fill:var(--accent)}
+    .rating-value{font-weight:900;font-size:16px;color:var(--accent-light)}
+    
+    .card-body{padding:20px;display:flex;flex-direction:column;gap:12px;position:relative}
+    .title-row h3{font-size:18px;font-weight:800;margin-bottom:6px;color:var(--text)}
+    .meta{color:var(--muted);font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center}
+    .meta-dot{
+      width:4px;
+      height:4px;
+      background:var(--muted);
+      border-radius:50%;
+    }
+    .desc{
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.6;
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+    .tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{
+      background:rgba(99,102,241,0.15);
+      color:var(--accent-light);
+      padding:6px 12px;
+      border-radius:8px;
+      font-size:12px;
+      font-weight:700;
+      border:1px solid rgba(99,102,241,0.3);
+    }
+    .card-actions{
+      margin-top:auto;
+      display:flex;
+      gap:10px;
+      padding-top:12px;
+    }
+    .btn{
+      flex:1;
+      padding:12px;
+      border-radius:12px;
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      font-size:14px;
+      transition:all 0.3s;
+      position:relative;
+      overflow:hidden;
+    }
+    .btn::before{
+      content:'';
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:0;
+      height:0;
+      border-radius:50%;
+      background:rgba(255,255,255,0.2);
+      transform:translate(-50%, -50%);
+      transition:width 0.6s, height 0.6s;
+    }
+    .btn:hover::before{
+      width:300px;
+      height:300px;
+    }
+    .btn.detail{
+      background:var(--bg-secondary);
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+    .btn.detail:hover{
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+    .btn.review{
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color:white;
+      box-shadow:0 4px 15px rgba(99,102,241,0.3);
+    }
+    .btn.review:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(99,102,241,0.5);
+    }
+
+    /* FOOTER */
+    footer{
+      margin-top:40px;
+      text-align:center;
+      color:var(--muted);
+      padding:24px;
+      border-top:1px solid var(--border);
+    }
+
+    /* MODAL - Enhanced */
+    .modal{
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(10,14,39,0.8);
+      backdrop-filter:blur(10px);
+      z-index:1000;
+      align-items:center;
+      justify-content:center;
+      animation:fadeIn 0.3s;
+    }
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .modal.active{display:flex}
+    .modal-content{
+      background:var(--card);
+      border-radius:24px;
+      padding:32px;
+      max-width:500px;
+      width:90%;
+      box-shadow:0 30px 80px rgba(0,0,0,0.5);
+      position:relative;
+      border:1px solid var(--border);
+      animation:slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .modal-close{
+      position:absolute;
+      top:20px;
+      right:20px;
+      background:var(--bg-secondary);
+      border:1px solid var(--border);
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      font-size:20px;
+      cursor:pointer;
+      color:var(--muted);
+      line-height:1;
+      transition:all 0.3s;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .modal-close:hover{
+      background:var(--accent);
+      color:white;
+      transform:rotate(90deg);
+    }
+    .modal-header{margin-bottom:24px}
+    .modal-header h2{
+      font-size:28px;
+      margin-bottom:8px;
+      font-weight:900;
+      background:linear-gradient(135deg, #fff 0%, var(--accent-light) 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .modal-header p{color:var(--muted);font-size:14px;line-height:1.6}
+    .form-group{margin-bottom:20px}
+    .form-group label{
+      display:block;
+      margin-bottom:8px;
+      font-weight:700;
+      font-size:14px;
+      color:var(--text);
+    }
+    .form-group input{
+      width:100%;
+      padding:14px 16px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      font-size:14px;
+      background:var(--bg-secondary);
+      color:var(--text);
+      transition:all 0.3s;
+    }
+    .form-group input:focus{
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(99,102,241,0.1);
+    }
+    .submit-btn{
+      width:100%;
+      padding:14px;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color:white;
+      border:0;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      font-size:16px;
+      transition:all 0.3s;
+      box-shadow:0 4px 15px rgba(99,102,241,0.3);
+    }
+    .submit-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(99,102,241,0.5);
+    }
+
+    /* DETAIL MODAL */
+    .detail-modal-content{max-width:700px}
+    .detail-info{display:flex;flex-direction:column;gap:16px}
+    .detail-row{
+      display:flex;
+      gap:12px;
+      padding:12px;
+      background:var(--bg-secondary);
+      border-radius:10px;
+      border:1px solid var(--border);
+    }
+    .detail-row strong{
+      min-width:100px;
+      color:var(--accent-light);
+      font-weight:700;
+    }
+    .detail-row span{color:var(--text)}
+
+    /* RATING MODAL */
+    .rating-display{
+      text-align:center;
+      margin:32px 0;
+      padding:32px;
+      background:var(--bg-secondary);
+      border-radius:16px;
+      border:1px solid var(--border);
+    }
+    .rating-display-value{
+      font-size:72px;
+      font-weight:900;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--pink) 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      line-height:1;
+      margin-bottom:8px;
+    }
+    .rating-slider{
+      width:100%;
+      margin-top:24px;
+      -webkit-appearance:none;
+      height:8px;
+      border-radius:5px;
+      background:var(--bg-secondary);
+      outline:none;
+    }
+    .rating-slider::-webkit-slider-thumb{
+      -webkit-appearance:none;
+      appearance:none;
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      cursor:pointer;
+      box-shadow:0 2px 10px rgba(99,102,241,0.5);
+    }
+    .rating-slider::-moz-range-thumb{
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      cursor:pointer;
+      box-shadow:0 2px 10px rgba(99,102,241,0.5);
+      border:0;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:1200px){
+      .container{grid-template-columns:280px 1fr}
+    }
+    @media (max-width:900px){
+      .container{grid-template-columns:1fr}
+      aside{position:relative;top:0}
+      .movie-grid{grid-template-columns:repeat(auto-fill, minmax(250px, 1fr))}
+    }
+    @media (max-width:640px){
+      .content-wrap{padding:12px}
+      header{padding:12px 16px}
+      .search input{width:140px}
+      .toggle-container{width:100%;order:-1}
+      .auth-btns{width:100%;order:3}
+      .btn-auth{flex:1}
+      .logo{font-size:18px;padding:8px 12px}
+      .site-title{font-size:18px}
+      .movie-grid{grid-template-columns:1fr}
+    }
+
+    .count{font-weight:900;color:var(--accent-light)}
+  </style>
+</head>
+<body>
+  <div class="content-wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">🎬</div>
+        <div>
+          <div class="site-title">StreamVibe</div>
+          <div class="tagline">Your vibe, your watch</div>
+        </div>
+      </div>
+
+      <div class="toggle-container">
+        <button class="toggle-btn active" onclick="toggleContent('movies')">🎥 Top Movies</button>
+        <button class="toggle-btn" onclick="toggleContent('series')">📺 Top Series</button>
+      </div>
+
+      <div class="nav-right">
+        <div class="search" role="search" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2"></circle>
+          </svg>
+          <input id="searchInput" placeholder="Search anything..." onkeyup="handleSearch()" />
+        </div>
+        <div class="auth-btns">
+          <button class="btn-auth btn-login" onclick="openLogin()">Login</button>
+          <button class="btn-auth btn-signup" onclick="openSignup()">Sign up</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <aside id="infoPanel">
+        <!-- Dynamic content will be inserted here -->
+      </aside>
+
+      <main>
+        <div class="hero">
+          <div class="hero-left">
+            <h1 id="heroTitle">Top 10 Movies That Slap 🔥</h1>
+            <p>Curated picks that are absolutely worth your time</p>
+          </div>
+          <div class="hero-right">
+            <div style="font-size:14px;color:var(--muted);font-weight:600">
+              Showing <span class="count" id="resultCount">10</span> results
+            </div>
+          </div>
+        </div>
+
+        <section class="movie-grid" id="contentGrid"></section>
+      </main>
+    </div>
+
+    <footer>
+      <div>StreamVibe © 2024 • Made with 💜 for movie lovers</div>
+    </footer>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal" id="loginModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeLogin()">&times;</button>
+      <div class="modal-header">
+        <h2>Welcome Back! 👋</h2>
+        <p>Login to continue your streaming journey</p>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" />
+      </div>
+      <button class="submit-btn" onclick="handleLogin()">Login</button>
+      <p style="text-align:center;margin-top:16px;color:var(--muted);font-size:14px">
+        Don't have an account? <span style="color:var(--accent);cursor:pointer;font-weight:700" onclick="closeLogin();openSignup()">Sign up</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- SIGNUP MODAL -->
+  <div class="modal" id="signupModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeSignup()">&times;</button>
+      <div class="modal-header">
+        <h2>Be a Critic Today! ✨</h2>
+        <p>Join our community and start rating movies & series</p>
+      </div>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="userName" placeholder="John Doe" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="userEmail" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="userPassword" placeholder="Create a strong password" />
+      </div>
+      <button class="submit-btn" onclick="handleSignup()">Create Account</button>
+      <p style="text-align:center;margin-top:16px;color:var(--muted);font-size:14px">
+        Already have an account? <span style="color:var(--accent);cursor:pointer;font-weight:700" onclick="closeSignup();openLogin()">Login</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div class="modal" id="detailModal">
+    <div class="modal-content detail-modal-content">
+      <button class="modal-close" onclick="closeDetail()">&times;</button>
+      <div class="modal-header">
+        <h2 id="detailTitle"></h2>
+        <p id="detailMeta"></p>
+      </div>
+      <div class="detail-info" id="detailInfo"></div>
+    </div>
+  </div>
+
+  <!-- RATING MODAL -->
+  <div class="modal" id="ratingModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeRating()">&times;</button>
+      <div class="modal-header">
+        <h2 id="ratingTitle"></h2>
+        <p>Rate this and help others discover great content</p>
+      </div>
+      <div class="rating-display">
+        <div class="rating-display-value" id="ratingValue">5.0</div>
+        <div style="color:var(--muted);font-size:14px;font-weight:600">out of 10</div>
+        <input type="range" class="rating-slider" min="1" max="10" step="0.5" value="5" oninput="updateRating(this.value)" />
+      </div>
+      <button class="submit-btn" onclick="submitRating()">Submit Rating</button>
+    </div>
+  </div>
+
+  <script>
+    const moviesData = [
+      {id: 1, title: 'Neon Skies', year: 2024, genre: 'Action', rating: 8.7, desc: 'A futuristic chase across a neon metropolis where loyalties are tested and secrets are revealed under glowing city lights.', tags: ['Cyberpunk', 'Action'], director: 'Alex Rivera', cast: 'Zhang Wei, Sofia Martinez, James Chen', runtime: '2h 10m', image: 'https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?auto=format&fit=crop&w=900&q=80'},
+      {id: 2, title: 'The Long Home', year: 2023, genre: 'Drama', rating: 8.3, desc: 'An emotional family saga about return, regret and healing across one long, transformative summer in the countryside.', tags: ['Family', 'Drama'], director: 'Emma Thompson', cast: 'Michael Grant, Lisa Wang, Robert Kim', runtime: '1h 50m', image: 'https://images.unsplash.com/photo-1517602479432-8a8b3d81f3b6?auto=format&fit=crop&w=900&q=80'},
+      {id: 3, title: 'Starlit Classroom', year: 2022, genre: 'Comedy', rating: 7.9, desc: 'A feel-good comedy about students who transform their school and themselves against all odds with humor and heart.', tags: ['Comedy', 'School'], director: 'Chris Park', cast: 'Laura Davis, Kevin Tanaka, Maya Patel', runtime: '1h 40m', image: 'https://images.unsplash.com/photo-1542204165-3c9a3c8fa3a8?auto=format&fit=crop&w=900&q=80'},
+      {id: 4, title: 'Moonrise Harbor', year: 2021, genre: 'Mystery', rating: 8.1, desc: 'A small-town mystery that unfolds under a strange moon — secrets surface and relationships strain in this indie gem.', tags: ['Mystery', 'Indie'], director: 'David Stone', cast: 'Patricia Lee, Marcus Johnson, Nina Rodriguez', runtime: '1h 55m', image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=80'},
+      {id: 5, title: 'Shadow Protocol', year: 2024, genre: 'Thriller', rating: 8.5, desc: 'A spy thriller where nothing is as it seems and every move could be your last in this edge-of-your-seat adventure.', tags: ['Spy', 'Thriller'], director: 'Elena Volkov', cast: 'Sam Carter, Yuki Nakamura, Alex Morgan', runtime: '2h 5m', image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=900&q=80'},
+      {id: 6, title: 'Echoes of Tomorrow', year: 2023, genre: 'Sci-Fi', rating: 8.4, desc: 'Time travelers race against the clock to prevent a catastrophic future in this mind-bending sci-fi epic.', tags: ['Sci-Fi', 'Time Travel'], director: 'Frank Morrison', cast: 'Victoria Zhang, Daniel O\'Brien, Priya Sharma', runtime: '2h 15m', image: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?auto=format&fit=crop&w=900&q=80'},
+      {id: 7, title: 'Beneath the Surface', year: 2023, genre: 'Drama', rating: 8.2, desc: 'A psychological drama exploring the depths of human nature and hidden truths that lie beneath our everyday masks.', tags: ['Psychological', 'Drama'], director: 'Grace Liu', cast: 'Yosef Ahmed, Rachel Green, Tom Anderson', runtime: '1h 58m', image: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=900&q=80'},
+      {id: 8, title: 'Wild Frontiers', year: 2022, genre: 'Adventure', rating: 8.0, desc: 'An epic journey across untamed lands where survival is the only goal and friendship is the only weapon.', tags: ['Adventure', 'Western'], director: 'Henry Blackwood', cast: 'Benjamin Cruz, Sophie Turner, Jake Wilson', runtime: '2h 20m', image: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=900&q=80'},
+      {id: 9, title: 'Crimson Dawn', year: 2021, genre: 'Action', rating: 7.8, desc: 'A war veteran must protect his family from a dangerous criminal organization in this action-packed thriller.', tags: ['Action', 'Revenge'], director: 'Ivan Petrov', cast: 'Eric Stone, Maria Santos, David Kim', runtime: '1h 52m', image: 'https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?auto=format&fit=crop&w=900&q=80'},
+      {id: 10, title: 'The Silent Voice', year: 2020, genre: 'Drama', rating: 8.6, desc: 'A powerful story about finding your voice in a world that refuses to listen — deeply moving and beautifully crafted.', tags: ['Inspiring', 'Drama'], director: 'Jessica Chen', cast: 'Hannah Brooks, Leo Martinez, Sarah Johnson', runtime: '2h 0m', image: 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=900&q=80'}
+    ];
+
+    const seriesData = [
+      {id: 11, title: 'Dark Horizons', year: 2024, genre: 'Thriller', rating: 9.1, desc: 'A mind-bending thriller series where reality and illusion blur in dangerous ways. Each episode leaves you questioning everything.', tags: ['Thriller', 'Mystery'], director: 'Karen Wu', cast: 'Kyle Chen, Linda Park, Marcus Lee', runtime: '8 episodes', image: 'https://images.unsplash.com/photo-1594908900066-3f47337549d8?auto=format&fit=crop&w=900&q=80'},
+      {id: 12, title: 'Kingdom of Ash', year: 2023, genre: 'Fantasy', rating: 9.0, desc: 'An epic fantasy saga of kingdoms at war and heroes rising from the ashes. Spectacular visuals and gripping storytelling.', tags: ['Fantasy', 'Epic'], director: 'Lucas Graham', cast: 'Noah Smith, Olivia Brown, Ethan Davis', runtime: '10 episodes', image: 'https://images.unsplash.com/photo-1569003339405-ea396a5a8a90?auto=format&fit=crop&w=900&q=80'},
+      {id: 13, title: 'Silicon Valley Stories', year: 2023, genre: 'Comedy', rating: 8.7, desc: 'A hilarious look at startup culture and tech industry absurdities. Smart comedy that hits close to home for tech workers.', tags: ['Comedy', 'Tech'], director: 'Melissa Foster', cast: 'Quinn Taylor, Ryan White, Sophia Garcia', runtime: '12 episodes', image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=900&q=80'},
+      {id: 14, title: 'True Detective Stories', year: 2022, genre: 'Crime', rating: 8.9, desc: 'Complex crime cases solved by brilliant but troubled detectives. Dark, gritty, and incredibly well-written noir drama.', tags: ['Crime', 'Mystery'], director: 'Nathan Cross', cast: 'Tyler Moore, Uma Singh, Victor Lopez', runtime: '8 episodes', image: 'https://images.unsplash.com/photo-1553095066-5014bc7b7f2d?auto=format&fit=crop&w=900&q=80'},
+      {id: 15, title: 'Cosmic Journey', year: 2024, genre: 'Sci-Fi', rating: 8.8, desc: 'A space exploration series following humanity\'s first deep space mission. Stunning visuals and philosophical depth.', tags: ['Sci-Fi', 'Space'], director: 'Olivia Reed', cast: 'William Chen, Xavier Knight, Yara Ahmed', runtime: '10 episodes', image: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?auto=format&fit=crop&w=900&q=80'},
+      {id: 16, title: 'Family Ties', year: 2023, genre: 'Drama', rating: 8.5, desc: 'Three generations of a family navigate love, loss, and legacy. Heartwarming and emotionally resonant storytelling.', tags: ['Family', 'Drama'], director: 'Paula Martinez', cast: 'Zoe Anderson, Aaron Bell, Bella Cooper', runtime: '10 episodes', image: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=900&q=80'},
+      {id: 17, title: 'The Chase', year: 2022, genre: 'Action', rating: 8.4, desc: 'High-octane action series following elite special forces operations. Non-stop adrenaline and tactical brilliance.', tags: ['Action', 'Military'], director: 'Quinn Roberts', cast: 'Carlos Rivera, Diana Foster, Eli Grant', runtime: '12 episodes', image: 'https://images.unsplash.com/photo-1516496636080-14fb876e029d?auto=format&fit=crop&w=900&q=80'},
+      {id: 18, title: 'Medieval Legends', year: 2021, genre: 'Historical', rating: 8.6, desc: 'Historical drama bringing medieval tales and legends to life with stunning production values and authentic storytelling.', tags: ['Historical', 'Drama'], director: 'Richard Stone', cast: 'Fiona Hughes, George Harris, Holly James', runtime: '8 episodes', image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=900&q=80'},
+      {id: 19, title: 'Mind Games', year: 2024, genre: 'Psychological', rating: 8.3, desc: 'Psychological thriller exploring the darkest corners of the human mind. Twisted, intelligent, and utterly captivating.', tags: ['Psychological', 'Thriller'], director: 'Simon Black', cast: 'Iris Miller, Jack Thompson, Kate Wilson', runtime: '10 episodes', image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=80'},
+      {id: 20, title: 'Paradise Island', year: 2023, genre: 'Adventure', rating: 8.2, desc: 'Survivors on a mysterious island must uncover its secrets to escape. Mystery, adventure, and supernatural elements collide.', tags: ['Adventure', 'Mystery'], director: 'Tara Young', cast: 'Liam Clark, Maya Scott, Nick Adams', runtime: '12 episodes', image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=900&q=80'}
+    ];
+
+    let currentContent = 'movies';
+    let currentItem = null;
+    let allData = moviesData;
+    let filteredData = moviesData;
+
+    const moviesInfo = {
+      icon: '🎬',
+      title: 'Movies',
+      description: 'Dive into our handpicked collection of cinematic masterpieces. From heart-pounding action to soul-stirring dramas, these movies represent the absolute best of modern cinema. Each one has been carefully selected based on critical acclaim, audience ratings, and cultural impact. Whether you\'re looking for a quick watch or a deep dive into storytelling excellence, you\'ll find something that resonates.',
+      stats: [
+        { value: '10K+', label: 'Reviews' },
+        { value: '8.2', label: 'Avg Rating' }
+      ],
+      trending: '🔥 Trending Genre: Sci-Fi'
+    };
+
+    const seriesInfo = {
+      icon: '📺',
+      title: 'Series',
+      description: 'Binge-worthy series that will keep you glued to your screen. Our top series picks span across genres, from epic fantasy sagas to gripping crime dramas. These aren\'t just shows — they\'re experiences that build worlds, develop complex characters, and tell stories that unfold beautifully over multiple episodes. Perfect for those cozy weekend marathons or nightly viewing rituals.',
+      stats: [
+        { value: '15K+', label: 'Watchers' },
+        { value: '8.6', label: 'Avg Rating' }
+      ],
+      trending: '🔥 Trending Genre: Thriller'
+    };
+
+    function updateInfoPanel(type) {
+      const info = type === 'movies' ? moviesInfo : seriesInfo;
+      const panel = document.getElementById('infoPanel');
+      
+      panel.innerHTML = `
+        <div class="info-header">
+          <div class="info-icon">${info.icon}</div>
+          <div class="info-title">${info.title}</div>
+        </div>
+        <div class="info-content">${info.description}</div>
+        <div class="stats-grid">
+          ${info.stats.map(stat => `
+            <div class="stat-card">
+              <div class="stat-value">${stat.value}</div>
+              <div class="stat-label">${stat.label}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="trending-tag">${info.trending}</div>
+      `;
+    }
+
+    function renderContent(data) {
+      const grid = document.getElementById('contentGrid');
+      grid.innerHTML = data.map(item => `
+        <article class="card">
+          <div class="thumb" style="background-image: url('${item.image}')">
+            <div class="rating-badge">
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span class="rating-value">${item.rating}</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="title-row">
+              <h3>${item.title}</h3>
+            </div>
+            <div class="meta">
+              <span>${item.year}</span>
+              <div class="meta-dot"></div>
+              <span>${item.genre}</span>
+              <div class="meta-dot"></div>
+              <span>${item.runtime}</span>
+            </div>
+            <p class="desc">${item.desc}</p>
+            <div class="tags">${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+            <div class="card-actions">
+              <button class="btn detail" onclick="openDetail(${item.id})">Details</button>
+              <button class="btn review" onclick="openRating(${item.id})">Rate</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function toggleContent(type) {
+      currentContent = type;
+      const btns = document.querySelectorAll('.toggle-btn');
+      btns.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      allData = type === 'movies' ? moviesData : seriesData;
+      filteredData = allData;
+      const title = type === 'movies' ? 'Top 10 Movies That Slap 🔥' : 'Top 10 Series Worth Binging 📺';
+      
+      document.getElementById('heroTitle').textContent = title;
+      document.getElementById('resultCount').textContent = filteredData.length;
+      updateInfoPanel(type);
+      renderContent(filteredData);
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      if (query === '') {
+        filteredData = allData;
+      } else {
+        filteredData = allData.filter(item => 
+          item.title.toLowerCase().includes(query) ||
+          item.genre.toLowerCase().includes(query) ||
+          item.desc.toLowerCase().includes(query) ||
+          item.tags.some(tag => tag.toLowerCase().includes(query)) ||
+          item.director.toLowerCase().includes(query) ||
+          item.cast.toLowerCase().includes(query)
+        );
+      }
+      
+      document.getElementById('resultCount').textContent = filteredData.length;
+      renderContent(filteredData);
+    }
+
+    function openLogin() {
+      document.getElementById('loginModal').classList.add('active');
+    }
+
+    function closeLogin() {
+      document.getElementById('loginModal').classList.remove('active');
+    }
+
+    function handleLogin() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      if (email && password) {
+        alert(`Welcome back! You're now logged in. 🎉`);
+        closeLogin();
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+      } else {
+        alert('Please fill in all fields');
+      }
+    }
+
+    function openSignup() {
+      document.getElementById('signupModal').classList.add('active');
+    }
+
+    function closeSignup() {
+      document.getElementById('signupModal').classList.remove('active');
+    }
+
+    function handleSignup() {
+      const name = document.getElementById('userName').value;
+      const email = document.getElementById('userEmail').value;
+      const password = document.getElementById('userPassword').value;
+      
+      if (name && email && password) {
+        alert(`Welcome aboard, ${name}! 🎉 You're now a StreamVibe critic. Start rating and discovering amazing content!`);
+        closeSignup();
+        document.getElementById('userName').value = '';
+        document.getElementById('userEmail').value = '';
+        document.getElementById('userPassword').value = '';
+      } else {
+        alert('Please fill in all fields');
+      }
+    }
+
+    function openDetail(id) {
+      const item = allData.find(i => i.id === id);
+      if (!item) return;
+      
+      document.getElementById('detailTitle').textContent = item.title;
+      document.getElementById('detailMeta').textContent = `${item.year} • ${item.genre} • ${item.runtime}`;
+      document.getElementById('detailInfo').innerHTML = `
+        <p style="line-height:1.8;color:var(--text);margin-bottom:16px">${item.desc}</p>
+        <div class="detail-row"><strong>Director:</strong> <span>${item.director}</span></div>
+        <div class="detail-row"><strong>Cast:</strong> <span>${item.cast}</span></div>
+        <div class="detail-row"><strong>Runtime:</strong> <span>${item.runtime}</span></div>
+        <div class="detail-row"><strong>Rating:</strong> <span style="font-weight:800;color:var(--accent-light)">${item.rating}/10</span></div>
+        <div class="detail-row"><strong>Genres:</strong> <span>${item.tags.join(', ')}</span></div>
+      `;
+      document.getElementById('detailModal').classList.add('active');
+    }
+
+    function closeDetail() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+
+    function openRating(id) {
+      const item = allData.find(i => i.id === id);
+      if (!item) return;
+      
+      currentItem = item;
+      document.getElementById('ratingTitle').textContent = `Rate: ${item.title}`;
+      document.getElementById('ratingValue').textContent = '5.0';
+      document.getElementById('ratingModal').classList.add('active');
+    }
+
+    function closeRating() {
+      document.getElementById('ratingModal').classList.remove('active');
+      currentItem = null;
+    }
+
+    function updateRating(value) {
+      document.getElementById('ratingValue').textContent = parseFloat(value).toFixed(1);
+    }
+
+    function submitRating() {
+      const rating = document.getElementById('ratingValue').textContent;
+      if (currentItem) {
+        alert(`You rated "${currentItem.title}" ${rating}/10. Thanks for being a critic! 🌟`);
+        closeRating();
+      }
+    }
+
+    // Initialize
+    updateInfoPanel('movies');
+    renderContent(moviesData);
+  </script>
+
+</body>
+</html>
