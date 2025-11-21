@@ -1,0 +1,1252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StreamVibe — Discover & Rate</title>
+  <meta name="description" content="Your next favorite movie or series awaits" />
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap');
+    
+    /* RESET + BASE */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family: 'Outfit', system-ui, sans-serif;}
+    :root{
+      --bg:#f8fafc;
+      --bg-secondary:#ffffff;
+      --nav:#ffffff;
+      --accent:#6366f1;
+      --accent-light:#818cf8;
+      --accent-dark:#4f46e5;
+      --pink:#ec4899;
+      --cyan:#06b6d4;
+      --card:#ffffff;
+      --card-hover:#f1f5f9;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --radius:16px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --glow: 0 0 20px rgba(99,102,241,0.2);
+    }
+
+    body{
+      background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #f1f5f9 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    /* Animated background */
+    body::before{
+      content:'';
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background: radial-gradient(circle at 20% 50%, rgba(99,102,241,0.06) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(236,72,153,0.06) 0%, transparent 50%);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .content-wrap{
+      position:relative;
+      z-index:1;
+      padding:20px;
+      max-width:1600px;
+      margin:0 auto;
+    }
+
+    /* NAV */
+    header{
+      background:rgba(255,255,255,0.95);
+      backdrop-filter:blur(20px);
+      border:1px solid var(--border);
+      color:var(--text);
+      padding:16px 24px;
+      border-radius:20px;
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      box-shadow:var(--shadow);
+      margin-bottom:24px;
+    }
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{
+      background:linear-gradient(135deg, var(--accent) 0%, var(--pink) 100%);
+      color:white;
+      font-weight:900;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:20px;
+      box-shadow:var(--glow);
+    }
+    .site-title{font-weight:900;font-size:22px;background:linear-gradient(135deg, var(--accent) 0%, var(--pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .tagline{font-size:12px;color:var(--muted);font-weight:500}
+
+    /* TOGGLE SWITCH - Enhanced */
+    .toggle-container{
+      display:flex;
+      gap:8px;
+      background:var(--bg);
+      border-radius:14px;
+      padding:6px;
+      border:1px solid var(--border);
+    }
+    .toggle-btn{
+      padding:10px 24px;
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      cursor:pointer;
+      border-radius:10px;
+      font-weight:700;
+      transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size:15px;
+      position:relative;
+    }
+    .toggle-btn.active{
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color:white;
+      box-shadow:0 4px 15px rgba(99,102,241,0.25);
+    }
+
+    .nav-right{display:flex;align-items:center;gap:14px}
+    .search{
+      background:var(--bg);
+      padding:10px 16px;
+      border-radius:12px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      border:1px solid var(--border);
+      transition:all 0.3s;
+    }
+    .search:focus-within{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(99,102,241,0.1);
+    }
+    .search input{
+      background:transparent;
+      border:0;
+      color:var(--text);
+      outline:none;
+      width:200px;
+      font-size:14px;
+    }
+    .search input::placeholder{color:var(--muted)}
+    
+    .auth-btns{display:flex;gap:10px}
+    .btn-auth{
+      padding:10px 20px;
+      border-radius:12px;
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      font-size:14px;
+      transition:all 0.3s;
+    }
+    .btn-login{
+      background:transparent;
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+    .btn-login:hover{
+      border-color:var(--accent);
+      color:var(--accent);
+      background:rgba(99,102,241,0.05);
+    }
+    .btn-signup{
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color:white;
+      box-shadow:0 4px 15px rgba(99,102,241,0.25);
+    }
+    .btn-signup:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(99,102,241,0.35);
+    }
+
+    /* LAYOUT */
+    .container{display:grid;grid-template-columns:320px 1fr;gap:24px;margin-top:24px}
+
+    /* SIDEBAR - Enhanced Info Panel */
+    aside{
+      background:rgba(255,255,255,0.8);
+      backdrop-filter:blur(20px);
+      padding:24px;
+      border-radius:var(--radius);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      height:max-content;
+      position:sticky;
+      top:20px;
+    }
+    .info-header{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:20px;
+      padding-bottom:16px;
+      border-bottom:2px solid var(--border);
+    }
+    .info-icon{
+      width:48px;
+      height:48px;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--pink) 100%);
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:24px;
+    }
+    .info-title{font-size:20px;font-weight:900;line-height:1.2;color:var(--text)}
+    .info-content{
+      color:var(--muted);
+      line-height:1.7;
+      font-size:15px;
+      margin-bottom:20px;
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:20px;
+    }
+    .stat-card{
+      background:var(--bg);
+      padding:16px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      text-align:center;
+    }
+    .stat-value{
+      font-size:24px;
+      font-weight:900;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--cyan) 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .stat-label{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:4px;
+      font-weight:600;
+    }
+    .trending-tag{
+      display:inline-block;
+      background:linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(236,72,153,0.1) 100%);
+      color:var(--accent);
+      padding:8px 16px;
+      border-radius:8px;
+      font-size:13px;
+      font-weight:700;
+      margin-top:16px;
+      border:1px solid rgba(99,102,241,0.2);
+    }
+
+    /* MAIN */
+    main{display:flex;flex-direction:column;gap:20px}
+    .hero{
+      background:linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(236,72,153,0.08) 100%);
+      backdrop-filter:blur(20px);
+      border:1px solid var(--border);
+      padding:24px;
+      border-radius:var(--radius);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      box-shadow:var(--shadow);
+    }
+    .hero-left h1{
+      font-size:28px;
+      font-weight:900;
+      margin-bottom:8px;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--pink) 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .hero-left p{color:var(--muted);font-size:14px;font-weight:500}
+
+    .movie-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+      gap:20px;
+    }
+
+    /* CARD - Enhanced */
+    .card{
+      background:var(--card);
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      display:flex;
+      flex-direction:column;
+      transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border:1px solid var(--border);
+      position:relative;
+    }
+    .card::before{
+      content:'';
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:linear-gradient(135deg, rgba(99,102,241,0.05) 0%, rgba(236,72,153,0.05) 100%);
+      opacity:0;
+      transition:opacity 0.4s;
+      pointer-events:none;
+    }
+    .card:hover{
+      transform:translateY(-8px);
+      box-shadow:0 20px 40px rgba(0,0,0,0.12), 0 0 30px rgba(99,102,241,0.15);
+      border-color:var(--accent);
+    }
+    .card:hover::before{opacity:1}
+    
+    .thumb{
+      height:380px;
+      background-size:cover;
+      background-position:center;
+      position:relative;
+    }
+    .thumb::after{
+      content:'';
+      position:absolute;
+      bottom:0;
+      left:0;
+      width:100%;
+      height:50%;
+      background:linear-gradient(to top, rgba(255,255,255,0.9) 0%, transparent 100%);
+    }
+    .rating-badge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      background:rgba(255,255,255,0.95);
+      backdrop-filter:blur(10px);
+      padding:8px 14px;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--border);
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    }
+    .rating-badge svg{width:16px;height:16px;fill:var(--accent)}
+    .rating-value{font-weight:900;font-size:16px;color:var(--accent)}
+    
+    .card-body{padding:20px;display:flex;flex-direction:column;gap:12px;position:relative}
+    .title-row h3{font-size:18px;font-weight:800;margin-bottom:6px;color:var(--text)}
+    .meta{color:var(--muted);font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center}
+    .meta-dot{
+      width:4px;
+      height:4px;
+      background:var(--muted);
+      border-radius:50%;
+    }
+    .desc{
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.6;
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+    .tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{
+      background:rgba(99,102,241,0.1);
+      color:var(--accent);
+      padding:6px 12px;
+      border-radius:8px;
+      font-size:12px;
+      font-weight:700;
+      border:1px solid rgba(99,102,241,0.2);
+    }
+    .card-actions{
+      margin-top:auto;
+      display:flex;
+      gap:10px;
+      padding-top:12px;
+    }
+    .btn{
+      flex:1;
+      padding:12px;
+      border-radius:12px;
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      font-size:14px;
+      transition:all 0.3s;
+      position:relative;
+      overflow:hidden;
+    }
+    .btn::before{
+      content:'';
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:0;
+      height:0;
+      border-radius:50%;
+      background:rgba(99,102,241,0.1);
+      transform:translate(-50%, -50%);
+      transition:width 0.6s, height 0.6s;
+    }
+    .btn:hover::before{
+      width:300px;
+      height:300px;
+    }
+    .btn.detail{
+      background:var(--bg);
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+    .btn.detail:hover{
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+    .btn.review{
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color:white;
+      box-shadow:0 4px 15px rgba(99,102,241,0.25);
+    }
+    .btn.review:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(99,102,241,0.35);
+    }
+
+    /* FOOTER */
+    footer{
+      margin-top:40px;
+      text-align:center;
+      color:var(--muted);
+      padding:24px;
+      border-top:1px solid var(--border);
+    }
+
+    /* MODAL - Enhanced */
+    .modal{
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(15,23,42,0.6);
+      backdrop-filter:blur(10px);
+      z-index:1000;
+      align-items:center;
+      justify-content:center;
+      animation:fadeIn 0.3s;
+    }
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .modal.active{display:flex}
+    .modal-content{
+      background:var(--card);
+      border-radius:24px;
+      padding:32px;
+      max-width:500px;
+      width:90%;
+      box-shadow:0 30px 80px rgba(0,0,0,0.2);
+      position:relative;
+      border:1px solid var(--border);
+      animation:slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .modal-close{
+      position:absolute;
+      top:20px;
+      right:20px;
+      background:var(--bg);
+      border:1px solid var(--border);
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      font-size:20px;
+      cursor:pointer;
+      color:var(--muted);
+      line-height:1;
+      transition:all 0.3s;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .modal-close:hover{
+      background:var(--accent);
+      color:white;
+      transform:rotate(90deg);
+    }
+    .modal-header{margin-bottom:24px}
+    .modal-header h2{
+      font-size:28px;
+      margin-bottom:8px;
+      font-weight:900;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--pink) 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .modal-header p{color:var(--muted);font-size:14px;line-height:1.6}
+    .form-group{margin-bottom:20px}
+    .form-group label{
+      display:block;
+      margin-bottom:8px;
+      font-weight:700;
+      font-size:14px;
+      color:var(--text);
+    }
+    .form-group input{
+      width:100%;
+      padding:14px 16px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      font-size:14px;
+      background:var(--bg);
+      color:var(--text);
+      transition:all 0.3s;
+    }
+    .form-group input:focus{
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(99,102,241,0.1);
+    }
+    .submit-btn{
+      width:100%;
+      padding:14px;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color:white;
+      border:0;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      font-size:16px;
+      transition:all 0.3s;
+      box-shadow:0 4px 15px rgba(99,102,241,0.25);
+    }
+    .submit-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(99,102,241,0.35);
+    }
+
+    /* DETAIL MODAL */
+    .detail-modal-content{max-width:700px}
+    .detail-info{display:flex;flex-direction:column;gap:16px}
+    .detail-row{
+      display:flex;
+      gap:12px;
+      padding:12px;
+      background:var(--bg);
+      border-radius:10px;
+      border:1px solid var(--border);
+    }
+    .detail-row strong{
+      min-width:100px;
+      color:var(--accent);
+      font-weight:700;
+    }
+    .detail-row span{color:var(--text)}
+
+    /* RATING MODAL */
+    .rating-display{
+      text-align:center;
+      margin:32px 0;
+      padding:32px;
+      background:var(--bg);
+      border-radius:16px;
+      border:1px solid var(--border);
+    }
+    .rating-display-value{
+      font-size:72px;
+      font-weight:900;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--pink) 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      line-height:1;
+      margin-bottom:8px;
+    }
+    .rating-slider{
+      width:100%;
+      margin-top:24px;
+      -webkit-appearance:none;
+      height:8px;
+      border-radius:5px;
+      background:var(--border);
+      outline:none;
+    }
+    .rating-slider::-webkit-slider-thumb{
+      -webkit-appearance:none;
+      appearance:none;
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      cursor:pointer;
+      box-shadow:0 2px 10px rgba(99,102,241,0.3);
+    }
+    .rating-slider::-moz-range-thumb{
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      cursor:pointer;
+      box-shadow:0 2px 10px rgba(99,102,241,0.3);
+      border:0;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:1200px){
+      .container{grid-template-columns:280px 1fr}
+    }
+    @media (max-width:900px){
+      .container{grid-template-columns:1fr}
+      aside{position:relative;top:0}
+      .movie-grid{grid-template-columns:repeat(auto-fill, minmax(250px, 1fr))}
+    }
+    @media (max-width:640px){
+      .content-wrap{padding:12px}
+      header{padding:12px 16px}
+      .search input{width:140px}
+      .toggle-container{width:100%;order:-1}
+      .auth-btns{width:100%;order:3}
+      .btn-auth{flex:1}
+      .logo{font-size:18px;padding:8px 12px}
+      .site-title{font-size:18px}
+      .movie-grid{grid-template-columns:1fr}
+    }
+
+    .count{font-weight:900;color:var(--accent)}
+  </style>
+</head>
+<body>
+  <div class="content-wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">🎬</div>
+        <div>
+          <div class="site-title">StreamVibe</div>
+          <div class="tagline">Your vibe, your watch</div>
+        </div>
+      </div>
+
+      <div class="toggle-container">
+        <button class="toggle-btn active" onclick="toggleContent('movies')">🎥 Top Movies</button>
+        <button class="toggle-btn" onclick="toggleContent('series')">📺 Top Series</button>
+      </div>
+
+      <div class="nav-right">
+        <div class="search" role="search" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2"></circle>
+          </svg>
+          <input id="searchInput" placeholder="Search anything..." onkeyup="handleSearch()" />
+        </div>
+        <div class="auth-btns">
+          <button class="btn-auth btn-login" onclick="openLogin()">Login</button>
+          <button class="btn-auth btn-signup" onclick="openSignup()">Sign up</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <aside id="infoPanel">
+        <!-- Dynamic content will be inserted here -->
+      </aside>
+
+      <main>
+        <div class="hero">
+          <div class="hero-left">
+            <h1 id="heroTitle">Top 10 Movies That Slap 🔥</h1>
+            <p>Curated picks that are absolutely worth your time</p>
+          </div>
+          <div class="hero-right">
+            <div style="font-size:14px;color:var(--muted);font-weight:600">
+              Showing <span class="count" id="resultCount">10</span> results
+            </div>
+          </div>
+        </div>
+
+        <section class="movie-grid" id="contentGrid"></section>
+      </main>
+    </div>
+
+    <footer>
+      <div>StreamVibe © 2024 • Made with 💜 for movie lovers</div>
+    </footer>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal" id="loginModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeLogin()">&times;</button>
+      <div class="modal-header">
+        <h2>Welcome Back! 👋</h2>
+        <p>Login to continue your streaming journey</p>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" />
+      </div>
+      <button class="submit-btn" onclick="handleLogin()">Login</button>
+      <p style="text-align:center;margin-top:16px;color:var(--muted);font-size:14px">
+        Don't have an account? <span style="color:var(--accent);cursor:pointer;font-weight:700" onclick="closeLogin();openSignup()">Sign up</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- SIGNUP MODAL -->
+  <div class="modal" id="signupModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeSignup()">&times;</button>
+      <div class="modal-header">
+        <h2>Be a Critic Today! ✨</h2>
+        <p>Join our community and start rating movies & series</p>
+      </div>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="userName" placeholder="John Doe" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="userEmail" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="userPassword" placeholder="Create a strong password" />
+      </div>
+      <button class="submit-btn" onclick="handleSignup()">Create Account</button>
+      <p style="text-align:center;margin-top:16px;color:var(--muted);font-size:14px">
+        Already have an account? <span style="color:var(--accent);cursor:pointer;font-weight:700" onclick="closeSignup();openLogin()">Login</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div class="modal" id="detailModal">
+    <div class="modal-content detail-modal-content">
+      <button class="modal-close" onclick="closeDetail()">&times;</button>
+      <div class="modal-header">
+        <h2 id="detailTitle"></h2>
+        <p id="detailMeta"></p>
+      </div>
+      <div class="detail-info" id="detailInfo"></div>
+    </div>
+  </div>
+
+  <!-- RATING MODAL -->
+  <div class="modal" id="ratingModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeRating()">&times;</button>
+      <div class="modal-header">
+        <h2 id="ratingTitle"></h2>
+        <p>Rate this and help others discover great content</p>
+      </div>
+      <div class="rating-display">
+        <div class="rating-display-value" id="ratingValue">5.0</div>
+        <div style="color:var(--muted);font-size:14px;font-weight:600">out of 10</div>
+        <input type="range" class="rating-slider" min="1" max="10" step="0.5" value="5" oninput="updateRating(this.value)" />
+      </div>
+      <button class="submit-btn" onclick="submitRating()">Submit Rating</button>
+    </div>
+  </div>
+
+  <script>
+    const moviesData = [
+  {
+    id: 1,
+    title: "The Shawshank Redemption",
+    year: 1994,
+    genre: "Drama",
+    rating: 9.3,
+    desc: "A banker wrongfully imprisoned forms a profound bond with a fellow inmate as he seeks hope in a place designed to destroy it.",
+    tags: ["Drama", "Classic"],
+    director: "Frank Darabont",
+    cast: "Tim Robbins, Morgan Freeman",
+    runtime: "2h 22m",
+    image: "https://images.justwatch.com/poster/309786652/s718/the-shawshank-redemption.jpg"
+  },
+  {
+    id: 2,
+    title: "The Godfather",
+    year: 1972,
+    genre: "Crime",
+    rating: 9.2,
+    desc: "The aging patriarch of a powerful crime family transfers control of his empire to his reluctant youngest son.",
+    tags: ["Crime", "Mafia"],
+    director: "Francis Ford Coppola",
+    cast: "Marlon Brando, Al Pacino",
+    runtime: "2h 55m",
+    image: "https://m.media-amazon.com/images/M/MV5BNGEwYjgwOGQtYjg5ZS00Njc1LTk2ZGEtM2QwZWQ2NjdhZTE5XkEyXkFqcGc@._V1_.jpg"
+  },
+  {
+    id: 3,
+    title: "The Matrix",
+    year: 1999,
+    genre: "Sci-Fi",
+    rating: 8.7,
+    desc: "A hacker discovers a dystopian reality controlled by machines and becomes humanity’s last hope.",
+    tags: ["Sci-Fi", "Action"],
+    director: "The Wachowskis",
+    cast: "Keanu Reeves, Laurence Fishburne",
+    runtime: "2h 16m",
+    image: "https://www.rogerebert.com/wp-content/uploads/2024/03/The-Matrix.jpg"
+  },
+  {
+    id: 4,
+    title: "Swades",
+    year: 2004,
+    genre: "Drama",
+    rating: 8.3,
+    desc: "An NRI scientist returns to India to reconnect with his roots and ends up transforming an entire village.",
+    tags: ["Drama", "Inspiring"],
+    director: "Ashutosh Gowariker",
+    cast: "Shah Rukh Khan",
+    runtime: "3h 30m",
+    image: "https://m.media-amazon.com/images/M/MV5BZWJlNmQ2NmQtM2U3Yi00MTZjLWI1YzktY2I2MmExMzgwNmE3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+  },
+  {
+    id: 5,
+    title: "Vikram",
+    year: 2022,
+    genre: "Action",
+    rating: 8.4,
+    desc: "A special agent wages war against a powerful drug syndicate as layers of a secret government mission unfold.",
+    tags: ["Action", "Thriller"],
+    director: "Lokesh Kanagaraj",
+    cast: "Kamal Haasan, Vijay Sethupathi, Fahadh Faasil",
+    runtime: "2h 52m",
+    image: "https://m.media-amazon.com/images/M/MV5BMmViYjExY2UtMzZjOS00OGQ2LWEzNWYtNGYxY2NkY2RmMDE3XkEyXkFqcGc@._V1_.jpg"
+  },
+  {
+    id: 6,
+    title: "Titanic",
+    year: 1997,
+    genre: "Romance",
+    rating: 7.9,
+    desc: "A timeless love story unfolds aboard the legendary ship as tragedy strikes the RMS Titanic.",
+    tags: ["Romance", "Drama"],
+    director: "James Cameron",
+    cast: "Leonardo DiCaprio, Kate Winslet",
+    runtime: "3h 14m",
+    image: "https://www.onthisday.com/images/articles/titanic-the-movie.jpg"
+  },
+  {
+    id: 7,
+    title: "The Terminator",
+    year: 1984,
+    genre: "Sci-Fi",
+    rating: 8.1,
+    desc: "A cyborg assassin is sent back in time to kill the mother of humanity's future savior.",
+    tags: ["Sci-Fi", "Action"],
+    director: "James Cameron",
+    cast: "Arnold Schwarzenegger, Linda Hamilton",
+    runtime: "1h 47m",
+    image: "https://m.media-amazon.com/images/I/81LV-wEZkuL._AC_UF1000,1000_QL80_.jpg"
+  },
+  {
+    id: 8,
+    title: "Border",
+    year: 1997,
+    genre: "War",
+    rating: 7.9,
+    desc: "Based on true events, Indian soldiers heroically defend their post during the 1971 Indo-Pak war.",
+    tags: ["War", "Patriotic"],
+    director: "J.P. Dutta",
+    cast: "Sunny Deol, Suniel Shetty, Akshaye Khanna",
+    runtime: "2h 59m",
+    image: "https://resizing.flixster.com/Ar4Jma3yVPfuV7ZcOxQB_o5CVf8=/fit-in/705x460/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p70294_k_v9_aa.jpg"
+  },
+  {
+    id: 9,
+    title: "Golmaal 3",
+    year: 2010,
+    genre: "Comedy",
+    rating: 6.4,
+    desc: "Two rival groups forced under one roof lead to chaos, laughs, and emotional twists.",
+    tags: ["Comedy", "Family"],
+    director: "Rohit Shetty",
+    cast: "Ajay Devgn, Kareena Kapoor, Arshad Warsi",
+    runtime: "2h 28m",
+    image: "https://m.media-amazon.com/images/M/MV5BMmEyM2M5OTItYjU1Ni00Mjk2LTgzZTMtOGZhZGU4MTA2MzcxXkEyXkFqcGc@._V1_.jpg"
+  },
+  {
+    id: 10,
+    title: "KGF: Chapter 1",
+    year: 2018,
+    genre: "Action",
+    rating: 8.2,
+    desc: "A man rises from poverty to power, battling crime lords to fulfill his mother's dying wish.",
+    tags: ["Action", "Drama"],
+    director: "Prashanth Neel",
+    cast: "Yash, Srinidhi Shetty",
+    runtime: "2h 35m",
+    image: "https://m.media-amazon.com/images/M/MV5BM2M0YmIxNzItOWI4My00MmQzLWE0NGYtZTM3NjllNjIwZjc5XkEyXkFqcGc@._V1_.jpg"
+  }
+];
+
+
+    const seriesData = [
+  {
+    id: 11,
+    title: "True Detective",
+    year: 2014,
+    genre: "Crime",
+    rating: 9.0,
+    desc: "Each season explores a new crime case through complex characters and psychological depth.",
+    tags: ["Crime", "Mystery"],
+    director: "Nic Pizzolatto",
+    cast: "Matthew McConaughey, Woody Harrelson",
+    runtime: "3 seasons",
+    image: "https://m.media-amazon.com/images/M/MV5BYjgwYzA1NWMtNDYyZi00ZGQyLWI5NTktMDYwZjE2OTIwZWEwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+  },
+  {
+    id: 12,
+    title: "Prison Break",
+    year: 2005,
+    genre: "Thriller",
+    rating: 8.3,
+    desc: "A man deliberately sends himself to prison to break out his innocent brother on death row.",
+    tags: ["Thriller", "Action"],
+    director: "Paul Scheuring",
+    cast: "Wentworth Miller, Dominic Purcell",
+    runtime: "5 seasons",
+    image: "https://resizing.flixster.com/dTydNPqQMCMitDg7EP5Z3-zMwNo=/fit-in/705x460/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p7894205_b_v9_aa.jpg"
+  },
+  {
+    id: 13,
+    title: "Dark",
+    year: 2017,
+    genre: "Sci-Fi",
+    rating: 8.8,
+    desc: "A mind-bending story of time travel, family secrets, and a town where history repeats itself.",
+    tags: ["Sci-Fi", "Mystery"],
+    director: "Baran bo Odar",
+    cast: "Louis Hofmann, Lisa Vicari",
+    runtime: "3 seasons",
+    image: "https://resizing.flixster.com/ZgKoj9ydS5IR92topei_WUy04yU=/fit-in/705x460/v2/https://resizing.flixster.com/lpJkDxnEFNQT1OWJjnmYfvpAHJ0=/ems.cHJkLWVtcy1hc3NldHMvdHZzZXJpZXMvUlRUVjI2NjgyOS53ZWJw"
+  },
+  {
+    id: 14,
+    title: "Scam 1992",
+    year: 2020,
+    genre: "Biography",
+    rating: 9.3,
+    desc: "The rise and fall of stockbroker Harshad Mehta in India's biggest financial scandal.",
+    tags: ["Biography", "Drama"],
+    director: "Hansal Mehta",
+    cast: "Pratik Gandhi, Shreya Dhanwanthary",
+    runtime: "10 episodes",
+    image: "https://m.media-amazon.com/images/M/MV5BNGRkOTVjODgtNTBmZS00MDQ3LWE3ZjQtM2ZiNDQ3OWJkMjM2XkEyXkFqcGc@._V1_.jpg"
+  },
+  {
+    id: 15,
+    title: "The Family Man",
+    year: 2019,
+    genre: "Action",
+    rating: 8.7,
+    desc: "A middle-class man secretly working as an elite intelligence officer struggles to balance duty and family.",
+    tags: ["Action", "Drama"],
+    director: "Raj & DK",
+    cast: "Manoj Bajpayee, Sharib Hashmi",
+    runtime: "2 seasons",
+    image: "https://resizing.flixster.com/ikoYIY6lKYyOO4wV6JKXn-zGbQE=/fit-in/705x460/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p17362077_b_v8_aa.jpg"
+  },
+  {
+    id: 16,
+    title: "Breaking Bad",
+    year: 2008,
+    genre: "Crime",
+    rating: 9.5,
+    desc: "A chemistry teacher turns to the drug world, transforming into one of the most feared criminals.",
+    tags: ["Crime", "Thriller"],
+    director: "Vince Gilligan",
+    cast: "Bryan Cranston, Aaron Paul",
+    runtime: "5 seasons",
+    image: "https://mediaproxy.tvtropes.org/width/1200/https://static.tvtropes.org/pmwiki/pub/images/breaking_bad_4.png"
+  },
+  {
+    id: 17,
+    title: "Dexter",
+    year: 2006,
+    genre: "Crime",
+    rating: 8.6,
+    desc: "A forensic expert who moonlights as a vigilante serial killer struggles between justice and darkness.",
+    tags: ["Crime", "Psychological"],
+    director: "James Manos Jr.",
+    cast: "Michael C. Hall, Jennifer Carpenter",
+    runtime: "8 seasons",
+    image: "https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p185267_b_v8_ac.jpg"
+  },
+  {
+    id: 18,
+    title: "Delhi Crime",
+    year: 2019,
+    genre: "Crime",
+    rating: 8.5,
+    desc: "Inspired by true events, Delhi police officers navigate brutal cases with resilience and integrity.",
+    tags: ["Crime", "Drama"],
+    director: "Richie Mehta",
+    cast: "Shefali Shah, Rasika Dugal",
+    runtime: "2 seasons",
+    image: "https://m.media-amazon.com/images/M/MV5BZDljNWNkNWItNjI0My00M2ViLThkODctYmMwMDRjYTExN2VhXkEyXkFqcGc@._V1_.jpg"
+  },
+  {
+    id: 19,
+    title: "You",
+    year: 2018,
+    genre: "Thriller",
+    rating: 7.7,
+    desc: "A charming yet dangerous man becomes obsessed with the women in his life, blurring love and obsession.",
+    tags: ["Thriller", "Psychological"],
+    director: "Greg Berlanti",
+    cast: "Penn Badgley, Victoria Pedretti",
+    runtime: "4 seasons",
+    image: "https://m.media-amazon.com/images/M/MV5BMTVlYmRhMWQtNmE0Yi00ODM1LWEzMWEtNTQzZGZhODRmZTE0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+  },
+  {
+    id: 20,
+    title: "Game of Thrones",
+    year: 2011,
+    genre: "Fantasy",
+    rating: 9.2,
+    desc: "Noble families battle for power as an ancient threat awakens beyond the Wall.",
+    tags: ["Fantasy", "Epic"],
+    director: "David Benioff & D.B. Weiss",
+    cast: "Kit Harington, Emilia Clarke, Peter Dinklage",
+    runtime: "8 seasons",
+    image: "https://m.media-amazon.com/images/M/MV5BMTNhMDJmNmYtNDQ5OS00ODdlLWE0ZDAtZTgyYTIwNDY3OTU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+  }
+];
+
+
+    let currentContent = 'movies';
+    let currentItem = null;
+    let allData = moviesData;
+    let filteredData = moviesData;
+
+    const moviesInfo = {
+      icon: '🎬',
+      title: 'Movies',
+      description: 'Dive into our handpicked collection of cinematic masterpieces. From heart-pounding action to soul-stirring dramas, these movies represent the absolute best of modern cinema. Each one has been carefully selected based on critical acclaim, audience ratings, and cultural impact. Whether you\'re looking for a quick watch or a deep dive into storytelling excellence, you\'ll find something that resonates.',
+      stats: [
+        { value: '10K+', label: 'Reviews' },
+        { value: '8.2', label: 'Avg Rating' }
+      ],
+      trending: '🔥 Trending Genre: Sci-Fi'
+    };
+
+    const seriesInfo = {
+      icon: '📺',
+      title: 'Series',
+      description: 'Binge-worthy series that will keep you glued to your screen. Our top series picks span across genres, from epic fantasy sagas to gripping crime dramas. These aren\'t just shows — they\'re experiences that build worlds, develop complex characters, and tell stories that unfold beautifully over multiple episodes. Perfect for those cozy weekend marathons or nightly viewing rituals.',
+      stats: [
+        { value: '15K+', label: 'Watchers' },
+        { value: '8.6', label: 'Avg Rating' }
+      ],
+      trending: '🔥 Trending Genre: Thriller'
+    };
+
+    function updateInfoPanel(type) {
+      const info = type === 'movies' ? moviesInfo : seriesInfo;
+      const panel = document.getElementById('infoPanel');
+      
+      panel.innerHTML = `
+        <div class="info-header">
+          <div class="info-icon">${info.icon}</div>
+          <div class="info-title">${info.title}</div>
+        </div>
+        <div class="info-content">${info.description}</div>
+        <div class="stats-grid">
+          ${info.stats.map(stat => `
+            <div class="stat-card">
+              <div class="stat-value">${stat.value}</div>
+              <div class="stat-label">${stat.label}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="trending-tag">${info.trending}</div>
+      `;
+    }
+
+    function renderContent(data) {
+      const grid = document.getElementById('contentGrid');
+      grid.innerHTML = data.map(item => `
+        <article class="card">
+          <div class="thumb" style="background-image: url('${item.image}')">
+            <div class="rating-badge">
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span class="rating-value">${item.rating}</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="title-row">
+              <h3>${item.title}</h3>
+            </div>
+            <div class="meta">
+              <span>${item.year}</span>
+              <div class="meta-dot"></div>
+              <span>${item.genre}</span>
+              <div class="meta-dot"></div>
+              <span>${item.runtime}</span>
+            </div>
+            <p class="desc">${item.desc}</p>
+            <div class="tags">${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+            <div class="card-actions">
+              <button class="btn detail" onclick="openDetail(${item.id})">Details</button>
+              <button class="btn review" onclick="openRating(${item.id})">Rate</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function toggleContent(type) {
+      currentContent = type;
+      const btns = document.querySelectorAll('.toggle-btn');
+      btns.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      allData = type === 'movies' ? moviesData : seriesData;
+      filteredData = allData;
+      const title = type === 'movies' ? 'Top 10 Movies That Slap 🔥' : 'Top 10 Series Worth Binging 📺';
+      
+      document.getElementById('heroTitle').textContent = title;
+      document.getElementById('resultCount').textContent = filteredData.length;
+      updateInfoPanel(type);
+      renderContent(filteredData);
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      if (query === '') {
+        filteredData = allData;
+      } else {
+        filteredData = allData.filter(item => 
+          item.title.toLowerCase().includes(query) ||
+          item.genre.toLowerCase().includes(query) ||
+          item.desc.toLowerCase().includes(query) ||
+          item.tags.some(tag => tag.toLowerCase().includes(query)) ||
+          item.director.toLowerCase().includes(query) ||
+          item.cast.toLowerCase().includes(query)
+        );
+      }
+      
+      document.getElementById('resultCount').textContent = filteredData.length;
+      renderContent(filteredData);
+    }
+
+    function openLogin() {
+      document.getElementById('loginModal').classList.add('active');
+    }
+
+    function closeLogin() {
+      document.getElementById('loginModal').classList.remove('active');
+    }
+
+    function handleLogin() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      if (email && password) {
+        alert(`Welcome back! You're now logged in. 🎉`);
+        closeLogin();
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+      } else {
+        alert('Please fill in all fields');
+      }
+    }
+
+    function openSignup() {
+      document.getElementById('signupModal').classList.add('active');
+    }
+
+    function closeSignup() {
+      document.getElementById('signupModal').classList.remove('active');
+    }
+
+    function handleSignup() {
+      const name = document.getElementById('userName').value;
+      const email = document.getElementById('userEmail').value;
+      const password = document.getElementById('userPassword').value;
+      
+      if (name && email && password) {
+        alert(`Welcome aboard, ${name}! 🎉 You're now a StreamVibe critic. Start rating and discovering amazing content!`);
+        closeSignup();
+        document.getElementById('userName').value = '';
+        document.getElementById('userEmail').value = '';
+        document.getElementById('userPassword').value = '';
+      } else {
+        alert('Please fill in all fields');
+      }
+    }
+
+    function openDetail(id) {
+      const item = allData.find(i => i.id === id);
+      if (!item) return;
+      
+      document.getElementById('detailTitle').textContent = item.title;
+      document.getElementById('detailMeta').textContent = `${item.year} • ${item.genre} • ${item.runtime}`;
+      document.getElementById('detailInfo').innerHTML = `
+        <p style="line-height:1.8;color:var(--text);margin-bottom:16px">${item.desc}</p>
+        <div class="detail-row"><strong>Director:</strong> <span>${item.director}</span></div>
+        <div class="detail-row"><strong>Cast:</strong> <span>${item.cast}</span></div>
+        <div class="detail-row"><strong>Runtime:</strong> <span>${item.runtime}</span></div>
+        <div class="detail-row"><strong>Rating:</strong> <span style="font-weight:800;color:var(--accent)">${item.rating}/10</span></div>
+        <div class="detail-row"><strong>Genres:</strong> <span>${item.tags.join(', ')}</span></div>
+      `;
+      document.getElementById('detailModal').classList.add('active');
+    }
+
+    function closeDetail() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+
+    function openRating(id) {
+      const item = allData.find(i => i.id === id);
+      if (!item) return;
+      
+      currentItem = item;
+      document.getElementById('ratingTitle').textContent = `Rate: ${item.title}`;
+      document.getElementById('ratingValue').textContent = '5.0';
+      document.getElementById('ratingModal').classList.add('active');
+    }
+
+    function closeRating() {
+      document.getElementById('ratingModal').classList.remove('active');
+      currentItem = null;
+    }
+
+    function updateRating(value) {
+      document.getElementById('ratingValue').textContent = parseFloat(value).toFixed(1);
+    }
+
+    function submitRating() {
+      const rating = document.getElementById('ratingValue').textContent;
+      if (currentItem) {
+        alert(`You rated "${currentItem.title}" ${rating}/10. Thanks for being a critic! 🌟`);
+        closeRating();
+      }
+    }
+
+    // Initialize
+    updateInfoPanel('movies');
+    renderContent(moviesData);
+  </script>
+
+</body>
+</html>
