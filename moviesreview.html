@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MovieHive — IMDB-like Clone (HTML & CSS only)</title>
+  <meta name="description" content="Responsive IMDB-like movie reviews UI built using only HTML & CSS. Add local images in the images/ folder." />
+
+  <style>
+    /* RESET + BASE */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    :root{
+      --bg:#f4f6f8;
+      --nav:#111827; /* dark nav like IMDB */
+      --accent:#ffcc00; /* IMDB yellow-ish */
+      --card:#ffffff;
+      --muted:#6b7280;
+      --radius:8px;
+      --shadow: 0 8px 24px rgba(16,24,40,0.08);
+    }
+
+    body{background:var(--bg);color:#0f172a;padding:18px}
+
+    /* NAV */
+    header{
+      background:var(--nav);color:white;padding:12px 18px;border-radius:8px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{background:var(--accent);color:#111827;font-weight:900;padding:6px 10px;border-radius:4px;font-size:18px}
+    .site-title{font-weight:700}
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .search{background:rgba(255,255,255,0.08);padding:8px;border-radius:6px;display:flex;gap:8px;align-items:center}
+    .search input{background:transparent;border:0;color:white;outline:none;width:220px}
+    .sign{background:transparent;border:1px solid rgba(255,255,255,0.12);padding:6px 10px;border-radius:6px;color:white}
+
+    /* LAYOUT */
+    .container{display:grid;grid-template-columns:240px 1fr;gap:18px;margin-top:18px}
+
+    /* SIDEBAR */
+    aside{background:var(--card);padding:14px;border-radius:var(--radius);box-shadow:var(--shadow);height:max-content}
+    aside h3{font-size:15px;margin-bottom:10px}
+    .filters{display:flex;flex-direction:column;gap:8px}
+    .filters label{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:14px}
+
+    /* MAIN */
+    main{display:flex;flex-direction:column;gap:14px}
+    .hero{background:linear-gradient(90deg,#ffffff,#fff7e6);padding:16px;border-radius:var(--radius);display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow)}
+    .hero-left h1{font-size:20px}
+    .hero-left p{color:var(--muted);font-size:13px}
+
+    .movie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+
+    /* CARD */
+    .card{background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+    .thumb{height:320px;background-size:cover;background-position:center}
+    .card-body{padding:12px;display:flex;flex-direction:column;gap:8px}
+    .title-row{display:flex;justify-content:space-between;align-items:flex-start}
+    .title-row h3{font-size:16px}
+    .meta{color:var(--muted);font-size:13px}
+    .desc{font-size:14px;color:#0b1220;line-height:1.25}
+    .tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{background:#fff9e6;color:#7b5f00;padding:6px 8px;border-radius:6px;font-size:12px}
+    .card-actions{margin-top:auto;display:flex;gap:8px}
+    .btn{flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+    .btn.detail{background:#111827;color:var(--accent)}
+    .btn.review{background:var(--accent);color:#111827}
+
+    /* FOOTER */
+    footer{margin-top:18px;text-align:center;color:var(--muted)}
+
+    /* DETAILS using <details> (no JS) */
+    details{border-top:1px solid #f1f5f9;padding-top:12px;margin-top:8px}
+    summary{list-style:none;cursor:pointer;color:#2563eb;font-weight:600}
+
+    /* RESPONSIVE */
+    @media (max-width:1000px){.movie-grid{grid-template-columns:repeat(2,1fr)}.container{grid-template-columns:1fr}}
+    @media (max-width:640px){.movie-grid{grid-template-columns:1fr}.search input{width:120px}.brand{width:100%}.nav-right{margin-left:auto}}
+
+    /* small visual touches */
+    .count{font-weight:700;color:#111827}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">MH</div>
+      <div>
+        <div class="site-title">MovieHive</div>
+        <div style="font-size:12px;color:#9ca3af">A clean IMDB-inspired UI (HTML & CSS)</div>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <div class="search" role="search" aria-label="Search movies">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="11" cy="11" r="6" stroke="white" stroke-width="1.4"></circle></svg>
+        <input placeholder="Search movies, actors..." />
+      </div>
+      <div class="sign">Sign in</div>
+    </div>
+  </header>
+
+  <div class="container">
+    <aside>
+      <h3>Filters</h3>
+      <div class="filters">
+        <label><input type="checkbox" checked /> Action</label>
+        <label><input type="checkbox" checked /> Drama</label>
+        <label><input type="checkbox" /> Comedy</label>
+        <label><input type="checkbox" /> Thriller</label>
+        <label><input type="checkbox" /> Romance</label>
+      </div>
+
+      <h3 style="margin-top:12px">Year</h3>
+      <div class="filters">
+        <label><input type="checkbox" checked /> 2024</label>
+        <label><input type="checkbox" /> 2022</label>
+        <label><input type="checkbox" /> 2021</label>
+        <label><input type="checkbox" /> 2019</label>
+      </div>
+
+      <h3 style="margin-top:12px">Top Picks</h3>
+      <p style="color:var(--muted);font-size:14px">Curated list to showcase UI. Images are stored locally in <code>images/</code> folder; fallback remote images are included inline.</p>
+    </aside>
+
+    <main>
+      <div class="hero">
+        <div class="hero-left">
+          <h1>Top Rated Movies</h1>
+          <p>Clean IMDB-like layout — responsive and built with only HTML & CSS.</p>
+        </div>
+        <div class="hero-right">
+          <div style="font-size:14px;color:var(--muted)">Showing <span class="count">4</span> results • Sorted by <strong>Rating</strong></div>
+        </div>
+      </div>
+
+      <section class="movie-grid">
+
+        <!-- CARD 1 -->
+        <article class="card">
+          <div class="thumb" style="background-image: url('images/neon_skies.jpg'), url('https://images.unsplash.com/photo-1517604931442-7f6b1f63b2b8?auto=format&fit=crop&w=900&q=60')"></div>
+          <div class="card-body">
+            <div class="title-row">
+              <div>
+                <h3>Neon Skies</h3>
+                <div class="meta">2024 • Action</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:800;color:#111827">8.7</div>
+                <div style="color:var(--muted);font-size:12px">/10</div>
+              </div>
+            </div>
+            <p class="desc">A futuristic chase across a neon metropolis where loyalties are tested and secrets are revealed.</p>
+            <div class="tags"><span class="tag">Cyberpunk</span><span class="tag">Action</span></div>
+            <details>
+              <summary>View details</summary>
+              <p style="margin-top:8px;color:var(--muted)">Director: A. Director • Cast: X, Y, Z • Runtime: 2h 10m</p>
+            </details>
+            <div class="card-actions">
+              <button class="btn detail">Details</button>
+              <button class="btn review">Rate</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- CARD 2 -->
+        <article class="card">
+          <div class="thumb" style="background-image: url('images/the_long_home.jpg'), url('https://images.unsplash.com/photo-1517602479432-8a8b3d81f3b6?auto=format&fit=crop&w=900&q=60')"></div>
+          <div class="card-body">
+            <div class="title-row">
+              <div>
+                <h3>The Long Home</h3>
+                <div class="meta">2022 • Drama</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:800;color:#111827">8.3</div>
+                <div style="color:var(--muted);font-size:12px">/10</div>
+              </div>
+            </div>
+            <p class="desc">An emotional family saga about return, regret and healing across one long, eventful summer.</p>
+            <div class="tags"><span class="tag">Family</span><span class="tag">Drama</span></div>
+            <details>
+              <summary>View details</summary>
+              <p style="margin-top:8px;color:var(--muted)">Director: B. Filmmaker • Cast: A, B, C • Runtime: 1h 50m</p>
+            </details>
+            <div class="card-actions">
+              <button class="btn detail">Details</button>
+              <button class="btn review">Rate</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- CARD 3 -->
+        <article class="card">
+          <div class="thumb" style="background-image: url('images/starlit_classroom.jpg'), url('https://images.unsplash.com/photo-1542204165-3c9a3c8fa3a8?auto=format&fit=crop&w=900&q=60')"></div>
+          <div class="card-body">
+            <div class="title-row">
+              <div>
+                <h3>Starlit Classroom</h3>
+                <div class="meta">2021 • Comedy</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:800;color:#111827">7.9</div>
+                <div style="color:var(--muted);font-size:12px">/10</div>
+              </div>
+            </div>
+            <p class="desc">A feel-good comedy about students who transform their school — and themselves — against all odds.</p>
+            <div class="tags"><span class="tag">Comedy</span><span class="tag">School</span></div>
+            <details>
+              <summary>View details</summary>
+              <p style="margin-top:8px;color:var(--muted)">Director: C. Comedy • Cast: L, M, N • Runtime: 1h 40m</p>
+            </details>
+            <div class="card-actions">
+              <button class="btn detail">Details</button>
+              <button class="btn review">Rate</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- CARD 4 -->
+        <article class="card">
+          <div class="thumb" style="background-image: url('images/moonrise_harbor.jpg'), url('https://images.unsplash.com/photo-1517604931442-7f6b1f63b2b8?auto=format&fit=crop&w=900&q=60')"></div>
+          <div class="card-body">
+            <div class="title-row">
+              <div>
+                <h3>Moonrise Harbor</h3>
+                <div class="meta">2019 • Mystery</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:800;color:#111827">8.1</div>
+                <div style="color:var(--muted);font-size:12px">/10</div>
+              </div>
+            </div>
+            <p class="desc">A small-town mystery that unfolds under a strange moon — secrets surface and relationships strain.</p>
+            <div class="tags"><span class="tag">Mystery</span><span class="tag">Indie</span></div>
+            <details>
+              <summary>View details</summary>
+              <p style="margin-top:8px;color:var(--muted)">Director: D. Storyteller • Cast: P, Q, R • Runtime: 1h 55m</p>
+            </details>
+            <div class="card-actions">
+              <button class="btn detail">Details</button>
+              <button class="btn review">Rate</button>
+            </div>
+          </div>
+        </article>
+
+      </section>
+
+      <nav style="display:flex;justify-content:center;margin-top:12px">
+        <ul style="list-style:none;display:flex;gap:8px">
+          <li><a href="#" style="padding:8px 12px;background:var(--card);border-radius:6px;box-shadow:var(--shadow);color:#111827;text-decoration:none">1</a></li>
+          <li><a href="#" style="padding:8px 12px;background:transparent;color:var(--muted);text-decoration:none">2</a></li>
+          <li><a href="#" style="padding:8px 12px;background:transparent;color:var(--muted);text-decoration:none">Next</a></li>
+        </ul>
+      </nav>
+
+    </main>
+  </div>
+
+  <footer>
+    <div class="small">MovieHive — IMDB-like UI clone using only HTML & CSS. © YourName</div>
+  </footer>
+
+  <!--
+    HOW TO ADD IMAGES (Required for offline/local submission):
+    1) Create a folder named "images" in the same directory as this HTML file.
+    2) Download these sample images and save with these exact filenames:
+       - images/neon_skies.jpg
+       - images/the_long_home.jpg
+       - images/starlit_classroom.jpg
+       - images/moonrise_harbor.jpg
+    3) If you cannot add local images, the page will use the Unsplash fallback images included inline (internet required).
+
+    NEED LINKS? Reply and I'll provide direct Unsplash links for each image so you can download them quickly.
+  -->
+
+</body>
+</html>
